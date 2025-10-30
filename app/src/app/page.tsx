@@ -1,57 +1,43 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useSession, signIn, signOut } from "next-auth/react";
+import Link from "next/link";
 
 export default function Home() {
   const { data: session, status } = useSession();
-  const [tracks, setTracks] = useState<any>(null);
   const [synced, setSynced] = useState(false);
 
   useEffect(() => {
-    async function sync() {
+    (async () => {
       if (session && !synced) {
         await fetch("/api/profile/sync", { method: "POST" });
         setSynced(true);
       }
-    }
-    sync();
+    })();
   }, [session, synced]);
 
-  async function loadTopTracks() {
-    const res = await fetch("/api/spotify/top-tracks");
-    const json = await res.json();
-    setTracks(json);
-  }
-
-  if (status === "loading") return <main style={{ padding: 24 }}>Lade Sessionâ€¦</main>;
+  if (status === "loading") return <main className="p-6">Lade Sessionâ€¦</main>;
 
   return (
-    <main style={{ padding: 24, fontFamily: "system-ui, sans-serif" }}>
-      <h1 style={{ fontSize: 28, marginBottom: 12 }}>tunebox í¾§</h1>
+    <main className="space-y-6">
+      <h1 className="text-3xl font-bold">tunebox í¾§</h1>
 
       {session ? (
-        <>
+        <div className="space-y-4">
           <p>Angemeldet als <b>{session.user?.email ?? session.user?.name ?? "Unbekannt"}</b></p>
-          <button onClick={() => signOut()} style={{ marginTop: 12, padding: "8px 12px" }}>
-            Sign out
-          </button>
-          <button onClick={loadTopTracks} style={{ marginLeft: 8, padding: "8px 12px" }}>
-            Meine Top-Tracks laden
-          </button>
-          <pre style={{ marginTop: 16, background: "#111", color: "#0f0", padding: 12, overflowX: "auto" }}>
-{JSON.stringify(session, null, 2)}
-          </pre>
-          <pre style={{ marginTop: 16, whiteSpace: "pre-wrap" }}>
-{tracks ? JSON.stringify(tracks, null, 2) : "Noch keine Tracks geladen."}
-          </pre>
-        </>
+          <div className="flex gap-3">
+            <button onClick={() => signOut()} className="px-3 py-2 bg-neutral-800 rounded hover:bg-neutral-700">Sign out</button>
+            <Link href="/playlists" className="px-3 py-2 bg-emerald-600 rounded hover:bg-emerald-500">Meine Playlists</Link>
+            <Link href="/player" className="px-3 py-2 bg-sky-600 rounded hover:bg-sky-500">Player</Link>
+          </div>
+        </div>
       ) : (
-        <>
+        <div className="space-y-3">
           <p>Nicht angemeldet.</p>
-          <button onClick={() => signIn("spotify")} style={{ marginTop: 12, padding: "8px 12px" }}>
+          <button onClick={() => signIn("spotify")} className="px-3 py-2 bg-emerald-600 rounded hover:bg-emerald-500">
             Mit Spotify anmelden
           </button>
-        </>
+        </div>
       )}
     </main>
   );
