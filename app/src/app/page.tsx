@@ -1,10 +1,21 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useSession, signIn, signOut } from "next-auth/react";
 
 export default function Home() {
   const { data: session, status } = useSession();
   const [tracks, setTracks] = useState<any>(null);
+  const [synced, setSynced] = useState(false);
+
+  useEffect(() => {
+    async function sync() {
+      if (session && !synced) {
+        await fetch("/api/profile/sync", { method: "POST" });
+        setSynced(true);
+      }
+    }
+    sync();
+  }, [session, synced]);
 
   async function loadTopTracks() {
     const res = await fetch("/api/spotify/top-tracks");
@@ -16,7 +27,7 @@ export default function Home() {
 
   return (
     <main style={{ padding: 24, fontFamily: "system-ui, sans-serif" }}>
-      <h1 style={{ fontSize: 28, marginBottom: 12 }}>tunebox</h1>
+      <h1 style={{ fontSize: 28, marginBottom: 12 }}>tunebox í¾§</h1>
 
       {session ? (
         <>
