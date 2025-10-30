@@ -1,0 +1,17 @@
+"use client";
+import Link from "next/link";
+
+export default function Home() {
+  return (
+    <main className="min-h-[40vh] grid place-items-center">
+      <div className="space-y-4 text-center">
+        <h1 className="text-3xl font-bold">tunebox í¾§</h1>
+        <p className="text-neutral-400">Tailwind aktiv, App lÃ¤uft.</p>
+        <div className="flex justify-center gap-3">
+          <Link href="/playlists" className="px-3 py-2 rounded bg-emerald-600 hover:bg-emerald-500">Meine Playlists</Link>
+          <Link href="/player" className="px-3 py-2 rounded bg-sky-600 hover:bg-sky-500">Player</Link>
+        </div>
+      </div>
+    </main>
+  );
+}
